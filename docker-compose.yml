@@ -11,9 +11,9 @@ services:
    links:
           - php
    ports:
-          - "80:80"
+          - "8080:80"
    expose:
-          - "80"
+          - "8080"
    environment:
           - "VIRTUAL_HOST=app.mmilko.git"
           - "VIRTUAL_PORT=8080"
@@ -22,6 +22,20 @@ services:
       ipv4_address: 172.29.0.5
    extra_hosts:
           - "app.mmilko.git:172.29.0.5"
+  varnish:
+    build: ./Docker/Images/Varnish
+    links:
+      - web
+    volumes:
+      - ./Docker/Images/Varnish/default.vcl:/etc/varnish/default.vcl
+    restart: unless-stopped
+    ports:
+        - 80:80
+    extra_hosts:
+          - "app.mmilko.git:172.29.0.5"
+    networks:
+      net2:
+        ipv4_address: 172.29.0.7
   php:
     container_name: symfony_php
     build: ./Docker/Images/PHP
